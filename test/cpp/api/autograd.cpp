@@ -134,8 +134,10 @@ TEST(AutogradAPITests, RetainGrad) {
 
   // Gradient should be accumulated
   out.backward({}, /*keep_graph=*/true);
+  std::cout << "here1" << std::endl;
   ASSERT_VARIABLE_EQ(h1.data() * 2, h1.grad().data());
   out.backward({}, /*keep_graph=*/true);
+  std::cout << "here2" << std::endl;
   ASSERT_VARIABLE_EQ(h1.data() * 4, h1.grad().data());
 
   input.grad().data().zero_();
@@ -143,7 +145,11 @@ TEST(AutogradAPITests, RetainGrad) {
   input.retain_grad();
   input.retain_grad();
   out.backward();
+  std::cout << "here3" << std::endl;
   ASSERT_VARIABLE_EQ(input.data() * 18, input.grad().data());
+
+  out.backward({}, /*keep_graph=*/true);
+  std::cout << "here4" << std::endl;
 }
 
 TEST(CustomAutogradTest, CustomFunction) {

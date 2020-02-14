@@ -163,7 +163,7 @@ void retain_grad(const Tensor & self) {
   }
   c10::weak_intrusive_ptr<TensorImpl> weak_self(self.getIntrusivePtr());
 
-  self.register_hook([&](Tensor grad){
+  std::function<void(Tensor)> retain_grad_hook([weak_self](Tensor grad) {
     if (weak_self.expired()) {
       return;
     } else {
@@ -179,6 +179,8 @@ void retain_grad(const Tensor & self) {
       }
     }
   });
+
+  self.register_hook(retain_grad_hook);
   impl::get_autograd_meta(self)->retains_grad_ = true;
 }
 
